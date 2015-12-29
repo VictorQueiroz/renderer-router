@@ -38,8 +38,8 @@ inherits(Router, router.Router, {
   }
 });
 
-var browser = new $location.Browser(window);
 var $location = window.$location;
+var browser = new $location.Browser(window);
 var $$location = new $location.Location(browser);
 
 renderer.router = new Router($$location);
