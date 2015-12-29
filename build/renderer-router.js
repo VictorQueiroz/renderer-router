@@ -152,8 +152,6 @@ renderer.bootstrap = function(element) {
   renderer.router.commit();
 };
 
-renderer.bootstrap(document);
-
 renderer
 .register('ndView', function() {
   return {

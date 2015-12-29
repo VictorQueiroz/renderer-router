@@ -61,5 +61,3 @@ renderer.bootstrap = function(element) {
   renderer.router.prepare(route);
   renderer.router.commit();
 };
-
-renderer.bootstrap(document);
