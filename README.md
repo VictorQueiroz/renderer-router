@@ -7,7 +7,7 @@
 - [eventemitter](https://github.com/VictorQueiroz/eventemitter)
 
 ### Usage
-```
+```js
 renderer.router.when('/index', {
   templateUrl: 'home.html'
 })
@@ -17,7 +17,7 @@ renderer.router.when('/index', {
 ```
 
 #### Template Cache (Like AngularJS `$templateCache` service)
-```
+```js
 renderer.templateCache('home.html', '<div>Index</div>');
 expect(renderer.templateCache('home.html')).toEqual('<div>Index</div>');
 ```
