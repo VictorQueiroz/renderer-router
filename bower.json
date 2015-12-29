@@ -1,0 +1,25 @@
+{
+  "name": "renderer-router",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Victor Queiroz <victorcqueirozg@gmail.com>"
+  ],
+  "license": "ISC",
+  "moduleType": [],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "renderer": "~1.0.22",
+    "location": "1.0.4",
+    "routedriver": "~1.0.2",
+    "eventemitter": "~1.0.3"
+  }
+}
