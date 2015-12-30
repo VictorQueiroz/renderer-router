@@ -28,6 +28,10 @@ renderer
             lastView = null;
           }
 
+          if(newScope) {
+            newScope.destroy();
+          }
+
           if(current) {
             newScope = scope.clone();
 

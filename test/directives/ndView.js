@@ -31,13 +31,13 @@ describe('ndView', function() {
 
     renderer.router = router;
     renderer.compile(view)(scope);
+
+    router
+      .when('/', { template: 'Landing page' })
+      .when('/home/index', { template: 'Index' });
   });
 
   it('should render the view according to the path', function() {
-    router
-    .when('/', { template: 'Landing page' })
-    .when('/home/index', { template: 'Index' });
-
     $$location.path('/');
 
     expect(view.outerHTML).toEqual(
@@ -66,5 +66,23 @@ describe('ndView', function() {
         'We are using templateUrl here! =)' +
       '</div></div></div></div>'
     );
+  });
+
+  it('should destroy the child scope when the view changes and there is a old view', function() {
+    var destroyListener = jasmine.createSpy();
+
+    expect(scope.childScopes.length).toBe(0);
+    expect(scope.topLevelScope).toBe(scope);
+
+    $$location.path('/home/index');
+
+    expect(scope.childScopes.length).toBe(1);
+    scope.childScopes[0].on('destroy', destroyListener);
+
+    expect(destroyListener).not.toHaveBeenCalled();
+
+    $$location.path('/');
+
+    expect(destroyListener).toHaveBeenCalled();
   });
 });
