@@ -109,10 +109,21 @@ function Router(location, routes) {
 inherits(Router, router.Router, {
   constructor: Router,
 
-  prepare: function(route) {
-    var lastRoute = this.current;
+  prepare: function(route, url) {
+    url = (url || this.location.url());
+
+    var param,
+        params = (url.match(route.regexp) || []).slice(1),
+        lastRoute = this.current;
 
     this.preparedRoute = route;
+    route.params = {};
+
+    route.originalPath.replace(/{(\w+)}/g, function(all, name) {
+      if((param = params.shift())) {
+        route.params[name] = param;
+      }
+    });
 
     if(this.emit('routeChangeStart', route, lastRoute)) {
       return true;
@@ -133,6 +144,19 @@ var browser = new $location.Browser(window);
 var $$location = new $location.Location(browser);
 
 renderer.router = new Router($$location);
+renderer.controller = function(Type, locals) {
+  locals = locals || {};
+
+  var args = [];
+
+  forEach(locals, function(value) {
+    args.push(value);
+  });
+
+  args.unshift(Type);
+
+  return new (Function.prototype.bind.apply(Type, args));
+};
 
 extend(renderer.router, {
   browser: browser,
@@ -182,6 +206,10 @@ renderer
             lastView = null;
           }
 
+          if(newScope) {
+            newScope.destroy();
+          }
+
           if(current) {
             newScope = scope.clone();
 
@@ -211,14 +239,38 @@ renderer
   };
 });
 
-renderer
-.register('ndView', function() {
+renderer.register('ndView', function() {
   return {
     restrict: 'A',
     priority: -400,
-    link: function(scope, node) {
-      node.innerHTML = renderer.router.current.template;
-      renderer.compile(node.childNodes)(scope);
+    link: function(scope, node, attrs, ctrl, transclude) {
+      var current = renderer.router.current;
+
+      node.innerHTML = current.template;
+
+      var link = renderer.compile(node.childNodes);
+
+      if(!current.locals) {
+        current.locals = {};
+      }
+
+      extend(current.locals, {
+        scope: scope,
+        attrs: attrs,
+        element: node,
+        transclude: transclude,
+        routeParams: current.params
+      });
+
+      if(current.controller) {
+        var controller = renderer.controller(current.controller, current.locals);
+
+        if(typeof current.controllerAs === 'string') {
+          scope[current.controllerAs] = controller;
+        }
+      }
+
+      link(scope);
     }
   }
 });

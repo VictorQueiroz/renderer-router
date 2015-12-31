@@ -61,14 +61,38 @@ renderer
   };
 });
 
-renderer
-.register('ndView', function() {
+renderer.register('ndView', function() {
   return {
     restrict: 'A',
     priority: -400,
-    link: function(scope, node) {
-      node.innerHTML = renderer.router.current.template;
-      renderer.compile(node.childNodes)(scope);
+    link: function(scope, node, attrs, ctrl, transclude) {
+      var current = renderer.router.current;
+
+      node.innerHTML = current.template;
+
+      var link = renderer.compile(node.childNodes);
+
+      if(!current.locals) {
+        current.locals = {};
+      }
+
+      extend(current.locals, {
+        scope: scope,
+        attrs: attrs,
+        element: node,
+        transclude: transclude,
+        routeParams: current.params
+      });
+
+      if(current.controller) {
+        var controller = renderer.controller(current.controller, current.locals);
+
+        if(typeof current.controllerAs === 'string') {
+          scope[current.controllerAs] = controller;
+        }
+      }
+
+      link(scope);
     }
   }
 });

@@ -16,8 +16,10 @@ describe('ndView', function() {
       scope,
       router,
       browser,
+      ctrlView,
       $$location,
-      fakeWindow;
+      fakeWindow,
+      ControllerView;
 
   beforeEach(function() {
     scope = new renderer.Scope();
@@ -32,9 +34,19 @@ describe('ndView', function() {
     renderer.router = router;
     renderer.compile(view)(scope);
 
+    ControllerView = function(scope, element, attrs, transclude) {
+      ctrlView = this;
+
+      this.scope = scope;
+      this.element = element;
+      this.attrs = attrs;
+      this.transclude = transclude;
+    };
+
     router
       .when('/', { template: 'Landing page' })
-      .when('/home/index', { template: 'Index' });
+      .when('/home/index', { template: 'Index' })
+      .when('/controller/view', { template: 'Controller view', controller: ControllerView, controllerAs: 'ctrlView' });
   });
 
   it('should render the view according to the path', function() {
@@ -84,5 +96,12 @@ describe('ndView', function() {
     $$location.path('/');
 
     expect(destroyListener).toHaveBeenCalled();
+  });
+
+  it('should instantiate a "controller" with scope, element, attributes and transclude function', function() {
+    $$location.path('/controller/view');
+
+    expect(scope.childScopes[0].ctrlView).toBe(ctrlView);
+    expect(scope.childScopes[0].ctrlView.scope instanceof renderer.Scope === true).toBeTruthy();
   });
 });

@@ -19,10 +19,21 @@ function Router(location, routes) {
 inherits(Router, router.Router, {
   constructor: Router,
 
-  prepare: function(route) {
-    var lastRoute = this.current;
+  prepare: function(route, url) {
+    url = (url || this.location.url());
+
+    var param,
+        params = (url.match(route.regexp) || []).slice(1),
+        lastRoute = this.current;
 
     this.preparedRoute = route;
+    route.params = {};
+
+    route.originalPath.replace(/{(\w+)}/g, function(all, name) {
+      if((param = params.shift())) {
+        route.params[name] = param;
+      }
+    });
 
     if(this.emit('routeChangeStart', route, lastRoute)) {
       return true;
@@ -43,6 +54,19 @@ var browser = new $location.Browser(window);
 var $$location = new $location.Location(browser);
 
 renderer.router = new Router($$location);
+renderer.controller = function(Type, locals) {
+  locals = locals || {};
+
+  var args = [];
+
+  forEach(locals, function(value) {
+    args.push(value);
+  });
+
+  args.unshift(Type);
+
+  return new (Function.prototype.bind.apply(Type, args));
+};
 
 extend(renderer.router, {
   browser: browser,

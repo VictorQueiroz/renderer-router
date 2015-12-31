@@ -52,5 +52,16 @@ describe('Router', function() {
 
       expect(router.preparedRoute).toBe(route);
     });
+
+    it('should save route params', function() {
+      router.when('/users/{userId}/{fromDate}', {});
+
+      location.url('/users/1/2014-03-21');
+
+      expect(router.current.params).toEqual({
+        userId: '1',
+        fromDate: '2014-03-21'
+      });
+    });
   });
 });

@@ -21,7 +21,7 @@ module.exports = function(config) {
 
     'src/helpers.js',
 
-    'src/TemplateCache.js',
+    'src/Router.js',
     'src/*.js',
 	  'src/directives/*.js',
 
