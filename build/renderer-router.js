@@ -164,17 +164,13 @@ extend(renderer.router, {
   Router: Router
 });
 
-var bootstrap = renderer.bootstrap;
-
-renderer.bootstrap = function(element) {
-  bootstrap(element);
-
+renderer.afterCompile(function(rootScope, rootElement) {
   var $location = renderer.router.location;
   var route = renderer.router.parse($location.path());
 
   renderer.router.prepare(route);
   renderer.router.commit();
-};
+});
 
 renderer
 .register('ndView', function() {
